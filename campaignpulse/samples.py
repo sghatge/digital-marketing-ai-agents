@@ -1,6 +1,6 @@
 """Fictional, aggregate-only demo scenarios."""
 SAMPLES = {
-    "Healthy campaign": {
+    "Healthy delivery, unsubscribe watch": {
         "campaign_name": "Spring customer newsletter", "metric_source": "synthetic_demo",
         "send_date": "2026-11-10", "reporting_date": "2026-11-18",
         "campaign_type": "newsletter", "audience_type": "customer", "industry": "Retail",
