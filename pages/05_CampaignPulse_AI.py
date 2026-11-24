@@ -226,6 +226,8 @@ else:
                        file_name="campaignpulse_template.csv",mime="text/csv")
 
 if submitted or csv_submit:
+    st.session_state.pop("campaignpulse_last", None)
+    st.session_state.pop("campaignpulse_ai_explanation", None)
     if csv_data:
         data={**csv_data,"metric_source":csv_data.get("metric_source","manual_entry")}
         mode="CSV upload"
