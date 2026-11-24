@@ -12,7 +12,7 @@ SAMPLES = {
         "campaign_name": "Fictional product announcement", "metric_source": "synthetic_demo",
         "send_date": "2026-11-10", "reporting_date": "2026-11-18",
         "campaign_type": "promotional", "audience_type": "mixed", "industry": "Technology",
-        "sent": 30000, "delivered": 27000, "hard_bounces": 900, "soft_bounces": 2100,
+        "sent": 30000, "delivered": 27000, "hard_bounces": 1200, "soft_bounces": 1800,
         "other_errors": 0, "ignored_errors": 0, "unique_opens": 5400,
         "unique_clicks": 540, "unsubscribes": 135,
     },
