@@ -1,3 +1,15 @@
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/sghatge/sghatge/main/assets/portfolio/project-banner.svg" width="100%" alt="Sangram Ghatge engineering portfolio banner">
+
+**INDEPENDENT ENGINEERING PORTFOLIO · DIGITAL MARKETING AI AGENTS**
+
+[GitHub Profile](https://github.com/sghatge) · [Portfolio](https://sghatge.github.io/adobe-campaign-v8-governance/)
+
+</div>
+
+---
+
 # Digital Marketing AI Lab
 
 A lightweight marketing-workflow prototype: one brief becomes a strategy, content drafts, campaign quality checks, and transparent performance calculations.
