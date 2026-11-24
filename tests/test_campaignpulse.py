@@ -6,7 +6,7 @@ from campaignpulse.reasoning import explain_with_optional_gemini
 
 class CampaignPulseTests(unittest.TestCase):
     def test_healthy_sample_metrics(self):
-        result = analyze_campaign(SAMPLES["Healthy campaign"])
+        result = analyze_campaign(SAMPLES["Healthy delivery, unsubscribe watch"])
         self.assertTrue(result["valid"])
         self.assertEqual(result["metrics"]["delivery_rate"], 98.2)
         self.assertEqual(result["metrics"]["open_rate"], 25.05)
