@@ -5,6 +5,8 @@ All rates are returned as percentages (0–100). The engine never calls an LLM.
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
+import json
 from typing import Any
 
 DEFAULT_THRESHOLDS = {
@@ -211,6 +213,17 @@ def normalize_campaign_input(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def load_thresholds() -> dict[str, Any]:
+    """Load editable JSON thresholds; fall back safely to built-in defaults."""
+    path = Path(__file__).resolve().parent.parent / "config" / "campaignpulse_thresholds.json"
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            loaded = json.load(handle)
+        return loaded if isinstance(loaded, dict) else DEFAULT_THRESHOLDS
+    except (OSError, ValueError):
+        return DEFAULT_THRESHOLDS
+
+
 def analyze_campaign(data: dict[str, Any], thresholds: dict[str, Any] | None = None):
     data = normalize_campaign_input(data)
     validation = validate_campaign(
@@ -221,5 +234,5 @@ def analyze_campaign(data: dict[str, Any], thresholds: dict[str, Any] | None = N
     if not validation["valid"]:
         return {"valid": False, "validation": validation}
     metrics = calculate_metrics(validation["counts"])
-    diagnosis = diagnose(metrics, thresholds)
+    diagnosis = diagnose(metrics, thresholds or load_thresholds())
     return {"valid": True, "validation": validation, "metrics": metrics, **diagnosis}
