@@ -79,16 +79,6 @@ python -m unittest discover -s tests -v
 - Human review is required before publishing or spending money.
 - Use fictional or sanitized data for public demonstrations.
 
+## Independent companion project
 
-## CampaignPulse AI — Adobe Campaign Edition
-
-The CampaignPulse AI V1 experience is available as a new page in the Streamlit multipage app. It accepts aggregate campaign statistics or CSV uploads, calculates KPIs deterministically, flags data-quality issues, and recommends Adobe Campaign operational checks without connecting to an Adobe Campaign instance.
-
-- [CampaignPulse V1 specification](README_CAMPAIGNPULSE.md)
-- [Creator playbook for ModletHub](modlethub/CAMPAIGNPULSE_AI_PLAYBOOK.md)
-- [Structured creator manifest](modlethub/campaignpulse_manifest.json)
-- [Oliver-ready creator submission](modlethub/CREATOR_SUBMISSION.md)
-- [Input contract v1.1](schemas/campaign_input_v1.1.json)
-- [Output contract v1.0](schemas/campaign_output_v1.0.json)
-
-Public demos use fictional aggregate data. No recipient-level data, credentials, broadlogs, or production delivery logs are accepted.
+CampaignPulse AI is maintained separately and is not part of this Digital Marketing AI Lab application. Visit the dedicated [CampaignPulse AI repository](https://github.com/sghatge/campaignpulse-ai) for its own application, tests, documentation and ModletHub creator materials.
