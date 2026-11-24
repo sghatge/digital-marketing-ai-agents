@@ -87,6 +87,7 @@ The CampaignPulse AI V1 experience is available as a new page in the Streamlit m
 - [CampaignPulse V1 specification](README_CAMPAIGNPULSE.md)
 - [Creator playbook for ModletHub](modlethub/CAMPAIGNPULSE_AI_PLAYBOOK.md)
 - [Structured creator manifest](modlethub/campaignpulse_manifest.json)
+- [Oliver-ready creator submission](modlethub/CREATOR_SUBMISSION.md)
 - [Input contract v1.1](schemas/campaign_input_v1.1.json)
 - [Output contract v1.0](schemas/campaign_output_v1.0.json)
 
