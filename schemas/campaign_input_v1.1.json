@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sghatge/digital-marketing-ai-agents/blob/main/schemas/campaign_input_v1.1.json",
+  "title": "CampaignPulse AI Campaign Input",
+  "type": "object",
+  "required": ["schema_version", "input_metadata", "campaign", "delivery_metrics", "engagement_metrics"],
+  "properties": {
+    "schema_version": {"const": "1.1"},
+    "input_metadata": {
+      "type": "object",
+      "required": ["input_mode", "metric_source"],
+      "properties": {
+        "analysis_id": {"type": "string"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "input_mode": {"enum": ["manual_form", "csv_upload", "synthetic_demo"]},
+        "metric_source": {"enum": ["adobe_campaign_v8", "adobe_campaign_v7", "other_esp", "manual_entry", "synthetic_demo"]},
+        "source_system_name": {"type": "string"},
+        "source_report_name": {"type": "string"},
+        "data_completeness": {"enum": ["complete", "partial", "unknown"]},
+        "user_notes": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "campaign": {
+      "type": "object",
+      "required": ["channel"],
+      "properties": {
+        "campaign_id": {"type": "string"},
+        "campaign_name": {"type": "string"},
+        "channel": {"const": "email"},
+        "send_date": {"type": "string", "format": "date"},
+        "reporting_date": {"type": "string", "format": "date"},
+        "reporting_timezone": {"type": "string"},
+        "campaign_type": {"enum": ["newsletter", "promotional", "transactional", "lifecycle", "re_engagement", "other"]},
+        "audience_type": {"enum": ["prospect", "customer", "mixed", "unknown"]},
+        "industry": {"type": "string"},
+        "country_or_region": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "delivery_metrics": {
+      "type": "object",
+      "required": ["sent", "delivered", "hard_bounces", "soft_bounces"],
+      "properties": {
+        "sent": {"type": "integer", "minimum": 0},
+        "delivered": {"type": "integer", "minimum": 0},
+        "hard_bounces": {"type": "integer", "minimum": 0},
+        "soft_bounces": {"type": "integer", "minimum": 0},
+        "ignored_errors": {"type": "integer", "minimum": 0},
+        "other_errors": {"type": "integer", "minimum": 0},
+        "excluded_before_send": {"type": "integer", "minimum": 0},
+        "new_quarantines": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "engagement_metrics": {
+      "type": "object",
+      "required": ["unique_opens", "unique_clicks", "unsubscribes"],
+      "properties": {
+        "unique_opens": {"type": "integer", "minimum": 0},
+        "unique_clicks": {"type": "integer", "minimum": 0},
+        "unsubscribes": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "optional_benchmarks": {"type": "object"},
+    "reconciliation": {
+      "type": "object",
+      "properties": {
+        "tolerance_count": {"type": "integer", "minimum": 0, "default": 10},
+        "tolerance_percentage": {"type": "number", "minimum": 0, "default": 0.5},
+        "treat_mismatch_as": {"enum": ["warning", "error"], "default": "warning"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
