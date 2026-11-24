@@ -106,23 +106,42 @@ for col,number,title,desc in [
         st.markdown(f'<div class="step"><span>{number}</span><b>{title}</b><span>{desc}</span></div>',unsafe_allow_html=True)
 
 st.caption("V1 · Standalone · Aggregate data only · Human approval required")
+def apply_sample_selection():
+    sample = SAMPLES.get(st.session_state.get("cp_scenario", "Manual entry"), {})
+    defaults = {
+        "campaign_name": "", "metric_source": "manual_entry", "campaign_type": "newsletter",
+        "audience_type": "unknown", "industry": "", "send_date": "", "reporting_date": "",
+        "sent": 25000, "delivered": 24550, "hard_bounces": 180, "soft_bounces": 270,
+        "unique_opens": 6150, "unique_clicks": 780, "unsubscribes": 95,
+        "other_errors": 0, "ignored_errors": 0
+    }
+    for field, default in defaults.items():
+        st.session_state["cp_" + field] = sample.get(field, default)
+
+initial_defaults = {
+    "campaign_name": "", "metric_source": "manual_entry", "campaign_type": "newsletter",
+    "audience_type": "unknown", "industry": "", "send_date": "", "reporting_date": "",
+    "sent": 25000, "delivered": 24550, "hard_bounces": 180, "soft_bounces": 270,
+    "unique_opens": 6150, "unique_clicks": 780, "unsubscribes": 95,
+    "other_errors": 0, "ignored_errors": 0
+}
+for field, default in initial_defaults.items():
+    st.session_state.setdefault("cp_" + field, default)
+
 with st.sidebar:
     st.markdown("### Campaign input")
-    scenario=st.selectbox("Start with a demo scenario",["Manual entry",*SAMPLES.keys()])
-    base=SAMPLES.get(scenario,{})
+    scenario=st.selectbox("Start with a demo scenario",["Manual entry",*SAMPLES.keys()],
+                          key="cp_scenario", on_change=apply_sample_selection)
     if scenario!="Manual entry":
         st.info("Fictional demonstration data. Selecting a scenario pre-fills the form.")
     source_options=["manual_entry","adobe_campaign_v8","adobe_campaign_v7","other_esp","synthetic_demo"]
-    default_source=base.get("metric_source","manual_entry")
-    metric_source=st.selectbox("Metric source",source_options,index=source_options.index(default_source))
-    campaign_name=st.text_input("Campaign name",value=base.get("campaign_name",""))
-    campaign_type=st.selectbox("Campaign type",["newsletter","promotional","transactional","lifecycle","re_engagement","other"],
-                               index=["newsletter","promotional","transactional","lifecycle","re_engagement","other"].index(base.get("campaign_type","newsletter")))
-    audience_type=st.selectbox("Audience type",["prospect","customer","mixed","unknown"],
-                               index=["prospect","customer","mixed","unknown"].index(base.get("audience_type","unknown")))
-    industry=st.text_input("Industry (optional)",value=base.get("industry",""))
-    send_date=st.text_input("Send date (YYYY-MM-DD)",value=base.get("send_date",""))
-    reporting_date=st.text_input("Reporting date (YYYY-MM-DD)",value=base.get("reporting_date",""))
+    metric_source=st.selectbox("Metric source",source_options,key="cp_metric_source")
+    campaign_name=st.text_input("Campaign name",key="cp_campaign_name")
+    campaign_type=st.selectbox("Campaign type",["newsletter","promotional","transactional","lifecycle","re_engagement","other"],key="cp_campaign_type")
+    audience_type=st.selectbox("Audience type",["prospect","customer","mixed","unknown"],key="cp_audience_type")
+    industry=st.text_input("Industry (optional)",key="cp_industry")
+    send_date=st.text_input("Send date (YYYY-MM-DD)",key="cp_send_date")
+    reporting_date=st.text_input("Reporting date (YYYY-MM-DD)",key="cp_reporting_date")
     st.divider()
     st.caption("Use synthetic or sanitized aggregate metrics only. Do not paste recipient records, addresses, broadlogs, credentials or confidential client data.")
 
@@ -131,17 +150,17 @@ st.caption("Required counts are marked *. All counts must be whole numbers and n
 with st.form("campaignpulse_metrics"):
     a,b,c=st.columns(3)
     with a:
-        sent=st.number_input("Sent *",min_value=0,value=int(base.get("sent",25000)),step=100)
-        delivered=st.number_input("Delivered *",min_value=0,value=int(base.get("delivered",24550)),step=100)
-        hard_bounces=st.number_input("Hard bounces *",min_value=0,value=int(base.get("hard_bounces",180)),step=1)
+        sent=st.number_input("Sent *",min_value=0,step=100,key="cp_sent")
+        delivered=st.number_input("Delivered *",min_value=0,step=100,key="cp_delivered")
+        hard_bounces=st.number_input("Hard bounces *",min_value=0,step=1,key="cp_hard_bounces")
     with b:
-        soft_bounces=st.number_input("Soft bounces *",min_value=0,value=int(base.get("soft_bounces",270)),step=1)
-        unique_opens=st.number_input("Unique opens *",min_value=0,value=int(base.get("unique_opens",6150)),step=10)
-        unique_clicks=st.number_input("Unique clicks *",min_value=0,value=int(base.get("unique_clicks",780)),step=10)
+        soft_bounces=st.number_input("Soft bounces *",min_value=0,step=1,key="cp_soft_bounces")
+        unique_opens=st.number_input("Unique opens *",min_value=0,step=10,key="cp_unique_opens")
+        unique_clicks=st.number_input("Unique clicks *",min_value=0,step=10,key="cp_unique_clicks")
     with c:
-        unsubscribes=st.number_input("Unsubscribes *",min_value=0,value=int(base.get("unsubscribes",95)),step=1)
-        other_errors=st.number_input("Other errors",min_value=0,value=int(base.get("other_errors",0)),step=1)
-        ignored_errors=st.number_input("Ignored errors",min_value=0,value=int(base.get("ignored_errors",0)),step=1)
+        unsubscribes=st.number_input("Unsubscribes *",min_value=0,step=1,key="cp_unsubscribes")
+        other_errors=st.number_input("Other errors",min_value=0,step=1,key="cp_other_errors")
+        ignored_errors=st.number_input("Ignored errors",min_value=0,step=1,key="cp_ignored_errors")
     tolerance_count=st.number_input("Reconciliation tolerance (count)",min_value=0,value=10,step=1)
     tolerance_percentage=st.number_input("Reconciliation tolerance (%)",min_value=0.0,max_value=10.0,value=0.5,step=0.1)
     submitted=st.form_submit_button("Analyse campaign",type="primary",use_container_width=True)
