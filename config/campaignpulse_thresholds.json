@@ -1,0 +1,9 @@
+{
+  "delivery_rate": {"warning_below": 95.0, "critical_below": 90.0},
+  "hard_bounce_rate": {"warning_above": 2.0, "critical_above": 3.0},
+  "soft_bounce_rate": {"warning_above": 5.0, "critical_above": 8.0},
+  "unsubscribe_rate": {"warning_above": 0.30, "critical_above": 0.50},
+  "open_rate": {"warning_below": 15.0, "healthy_above": 20.0},
+  "click_rate": {"warning_below": 1.0, "healthy_above": 2.0},
+  "ctor": {"warning_below": 8.0, "healthy_above": 12.0}
+}
