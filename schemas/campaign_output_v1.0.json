@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CampaignPulse AI Analysis Output",
+  "type": "object",
+  "required": ["schema_version", "input", "analysis", "report_mode", "creator"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "creator": {"const": "Sangram Ghatge"},
+    "report_mode": {"enum": ["Practitioner", "Management"]},
+    "input": {"$ref": "campaign_input_v1.1.json"},
+    "analysis": {
+      "type": "object",
+      "required": ["valid", "overall_health", "metrics", "findings", "priority_actions", "validation"],
+      "properties": {
+        "valid": {"const": true},
+        "overall_health": {"enum": ["Healthy", "Watch", "At risk", "Critical"]},
+        "metrics": {"type": "object"},
+        "findings": {"type": "array", "items": {"type": "object"}},
+        "priority_actions": {"type": "array", "items": {"type": "string"}},
+        "validation": {"type": "object"}
+      }
+    }
+  }
+}
