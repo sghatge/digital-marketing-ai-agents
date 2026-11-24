@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import io
 import json
 import os
-from datetime import date
-from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -205,6 +202,7 @@ st.subheader("Or analyse a CSV")
 st.caption("One campaign per row. Select a row after upload. Required columns: sent, delivered, hard_bounces, soft_bounces, unique_opens, unique_clicks, unsubscribes.")
 uploaded=st.file_uploader("Upload campaign CSV",type=["csv"],key="campaignpulse_csv")
 csv_data=None
+csv_submit=False
 if uploaded:
     try:
         frame=pd.read_csv(uploaded)
@@ -217,7 +215,8 @@ if uploaded:
         else:
             selected=st.selectbox("Select campaign row",range(len(frame)),format_func=lambda i:f"Row {i+1}: "+str(frame.iloc[i].get("campaign_name","Unnamed campaign")))
             csv_data=normalize_csv_row(frame.iloc[selected].to_dict())
-            st.success(f"Loaded {len(frame)} campaign row(s). Analysing row {selected+1}.")
+            st.success(f"Loaded {len(frame)} campaign row(s). Selected row {selected+1}.")
+            csv_submit=st.button("Analyse selected CSV row",type="primary",key="campaignpulse_csv_analyse")
             st.download_button("Download CSV template",data="campaign_name,metric_source,send_date,reporting_date,campaign_type,audience_type,industry,sent,delivered,hard_bounces,soft_bounces,other_errors,ignored_errors,unique_opens,unique_clicks,unsubscribes\nSpring Newsletter,synthetic_demo,2026-11-10,2026-11-18,newsletter,customer,Retail,25000,24550,180,270,0,0,6150,780,95\n",
                                file_name="campaignpulse_template.csv",mime="text/csv")
     except Exception as exc:
@@ -226,7 +225,7 @@ else:
     st.download_button("Download CSV template",data="campaign_name,metric_source,send_date,reporting_date,campaign_type,audience_type,industry,sent,delivered,hard_bounces,soft_bounces,other_errors,ignored_errors,unique_opens,unique_clicks,unsubscribes\nSpring Newsletter,synthetic_demo,2026-11-10,2026-11-18,newsletter,customer,Retail,25000,24550,180,270,0,0,6150,780,95\n",
                        file_name="campaignpulse_template.csv",mime="text/csv")
 
-if submitted or csv_data:
+if submitted or csv_submit:
     if csv_data:
         data={**csv_data,"metric_source":csv_data.get("metric_source","manual_entry")}
         mode="CSV upload"
@@ -248,6 +247,7 @@ if submitted or csv_data:
             st.write("• "+error)
     else:
         st.session_state["campaignpulse_last"]={"data":data,"result":result,"mode":mode}
+        st.session_state.pop("campaignpulse_ai_explanation", None)
         st.rerun()
 
 if "campaignpulse_last" in st.session_state:
