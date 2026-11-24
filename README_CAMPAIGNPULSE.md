@@ -40,6 +40,8 @@ python -m unittest discover -s tests -v
 
 Use aggregate, synthetic or sanitized metrics only. Do not upload recipient-level data, email addresses, broadlogs, production delivery logs, confidential client information or credentials. The application does not inspect live Adobe Campaign records.
 
-## ModletHub creator playbook
+## ModletHub creator package
 
-See [modlethub/CAMPAIGNPULSE_AI_PLAYBOOK.md](modlethub/CAMPAIGNPULSE_AI_PLAYBOOK.md) for the reusable workflow, evidence model, safety boundaries and creator attribution.
+- [Creator submission pack](modlethub/CREATOR_SUBMISSION.md)
+- [Detailed playbook](modlethub/CAMPAIGNPULSE_AI_PLAYBOOK.md)
+- [Structured creator manifest](modlethub/campaignpulse_manifest.json)
