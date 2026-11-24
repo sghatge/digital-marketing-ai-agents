@@ -192,7 +192,27 @@ def diagnose(metrics: dict[str, float | None], thresholds: dict[str, Any] | None
             "health_basis": "Configurable V1 thresholds; not an Adobe-certified score."}
 
 
+def normalize_campaign_input(data: dict[str, Any]) -> dict[str, Any]:
+    """Accept canonical nested v1.1 input or the flat UI/CSV representation."""
+    if not isinstance(data, dict) or "delivery_metrics" not in data:
+        return dict(data or {})
+    metadata = data.get("input_metadata", {}) or {}
+    campaign = data.get("campaign", {}) or {}
+    delivery = data.get("delivery_metrics", {}) or {}
+    engagement = data.get("engagement_metrics", {}) or {}
+    reconciliation = data.get("reconciliation", {}) or {}
+    return {
+        **campaign, **delivery, **engagement,
+        "metric_source": metadata.get("metric_source", "manual_entry"),
+        "input_mode": metadata.get("input_mode", "manual_form"),
+        "data_completeness": metadata.get("data_completeness", "unknown"),
+        "tolerance_count": reconciliation.get("tolerance_count", 10),
+        "tolerance_percentage": reconciliation.get("tolerance_percentage", 0.5),
+    }
+
+
 def analyze_campaign(data: dict[str, Any], thresholds: dict[str, Any] | None = None):
+    data = normalize_campaign_input(data)
     validation = validate_campaign(
         data,
         tolerance_count=int(data.get("tolerance_count", 10) or 0),
