@@ -1,6 +1,7 @@
 import unittest
 from campaignpulse.engine import analyze_campaign, calculate_metrics, validate_campaign
 from campaignpulse.samples import SAMPLES
+from campaignpulse.reasoning import explain_with_optional_gemini
 
 
 class CampaignPulseTests(unittest.TestCase):
@@ -75,6 +76,22 @@ class CampaignPulseTests(unittest.TestCase):
         data = dict(SAMPLES["Healthy campaign"], reporting_date="2026-11-10")
         result = analyze_campaign(data)
         self.assertTrue(any("Early reporting" in x for x in result["validation"]["warnings"]))
+
+    def test_canonical_nested_v11_input_is_accepted(self):
+        nested = {
+            "schema_version": "1.1",
+            "input_metadata": {"input_mode": "manual_form", "metric_source": "manual_entry"},
+            "campaign": {"channel": "email", "campaign_name": "Canonical test"},
+            "delivery_metrics": {"sent": 25000, "delivered": 24550, "hard_bounces": 180, "soft_bounces": 270},
+            "engagement_metrics": {"unique_opens": 6150, "unique_clicks": 780, "unsubscribes": 95},
+            "reconciliation": {"tolerance_count": 10, "tolerance_percentage": 0.5}
+        }
+        result = analyze_campaign(nested)
+        self.assertTrue(result["valid"])
+        self.assertEqual(result["metrics"]["delivery_rate"], 98.2)
+
+    def test_optional_llm_is_offline_without_key(self):
+        self.assertIsNone(explain_with_optional_gemini({"overall_health": "Healthy"}, api_key=""))
 
     def test_zero_delivered_does_not_divide_by_zero(self):
         data = dict(SAMPLES["Healthy campaign"], delivered=0, hard_bounces=25000,
