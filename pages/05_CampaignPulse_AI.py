@@ -76,6 +76,41 @@ def make_markdown(data, result, mode):
               "Standalone decision support. No Adobe Campaign instance was accessed. Verify recommendations in your own environment."]
     return "\n".join(lines)
 
+def to_canonical_input(data, mode):
+    return {
+        "schema_version": "1.1",
+        "input_metadata": {
+            "input_mode": "csv_upload" if mode == "CSV upload" else "manual_form",
+            "metric_source": data.get("metric_source", "manual_entry"),
+            "data_completeness": "complete",
+            "user_notes": ""
+        },
+        "campaign": {
+            "campaign_name": data.get("campaign_name", ""),
+            "channel": "email",
+            "send_date": data.get("send_date") or None,
+            "reporting_date": data.get("reporting_date") or None,
+            "reporting_timezone": "UTC",
+            "campaign_type": data.get("campaign_type", "other"),
+            "audience_type": data.get("audience_type", "unknown"),
+            "industry": data.get("industry", "")
+        },
+        "delivery_metrics": {
+            key: int(data.get(key, 0) or 0)
+            for key in ["sent", "delivered", "hard_bounces", "soft_bounces", "ignored_errors", "other_errors"]
+        },
+        "engagement_metrics": {
+            key: int(data.get(key, 0) or 0)
+            for key in ["unique_opens", "unique_clicks", "unsubscribes"]
+        },
+        "optional_benchmarks": {"benchmark_source": "industry_default"},
+        "reconciliation": {
+            "tolerance_count": int(data.get("tolerance_count", 10)),
+            "tolerance_percentage": float(data.get("tolerance_percentage", 0.5)),
+            "treat_mismatch_as": "warning"
+        }
+    }
+
 def normalize_csv_row(row):
     data = {}
     for key in ["campaign_id","campaign_name","metric_source","send_date","reporting_date","campaign_type","audience_type","industry"]:
@@ -289,6 +324,6 @@ if "campaignpulse_last" in st.session_state:
             st.checkbox(action,key="cp_action_"+str(abs(hash(action))))
     report=make_markdown(data,result,mode_view)
     st.download_button("Download campaign report (.md)",data=report,file_name="campaignpulse_campaign_report.md",mime="text/markdown",type="primary")
-    payload={"schema_version":"1.1","input":data,"analysis":result,"report_mode":mode_view,"creator":"Sangram Ghatge"}
+    payload={"schema_version":"1.0","input":to_canonical_input(data,mode),"analysis":result,"report_mode":mode_view,"creator":"Sangram Ghatge"}
     st.download_button("Download analysis JSON",data=json.dumps(payload,indent=2,default=str),file_name="campaignpulse_analysis.json",mime="application/json")
     st.caption("CampaignPulse AI is standalone. It has not accessed, verified or changed your Adobe Campaign environment. Validate findings in your own instance.")
