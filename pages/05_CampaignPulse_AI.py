@@ -11,6 +11,7 @@ import streamlit as st
 
 from campaignpulse.engine import analyze_campaign
 from campaignpulse.samples import SAMPLES
+from campaignpulse.reasoning import explain_with_optional_gemini
 
 st.set_page_config(page_title="CampaignPulse AI", page_icon="◈", layout="wide")
 
@@ -239,6 +240,25 @@ if "campaignpulse_last" in st.session_state:
             st.write(f"**{i}.** {action}")
     else:
         st.write("Continue monitoring and compare against a verified historical baseline.")
+    st.markdown("#### Optional AI explanation")
+    secret_key = os.getenv("GEMINI_API_KEY", "")
+    try:
+        secret_key = secret_key or st.secrets.get("GEMINI_API_KEY", "")
+    except Exception:
+        pass
+    if secret_key:
+        if st.button("Generate AI explanation", key="campaignpulse_ai_explain"):
+            with st.spinner("Generating a bounded explanation from aggregate metrics..."):
+                explanation = explain_with_optional_gemini(result, api_key=secret_key)
+            if explanation:
+                st.session_state["campaignpulse_ai_explanation"] = explanation
+            else:
+                st.warning("The optional model was unavailable. The deterministic report remains complete.")
+        if st.session_state.get("campaignpulse_ai_explanation"):
+            st.markdown(st.session_state["campaignpulse_ai_explanation"])
+        st.caption("Optional Gemini explanation. It cannot change calculated metrics, evidence, severity or recommended checks.")
+    else:
+        st.info("Optional AI narrative is not configured. Deterministic analysis, findings and reports work without an API key. Add GEMINI_API_KEY to Streamlit secrets only if you want to enable model-generated explanations.")
     mode_view=st.radio("Report view",["Practitioner","Management"],horizontal=True,key="campaignpulse_report_mode")
     if mode_view=="Management":
         st.markdown("**Executive summary**")
